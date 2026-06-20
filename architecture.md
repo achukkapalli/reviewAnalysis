@@ -1,12 +1,12 @@
 # Weekly Product Review Pulse - Architecture Specification
 
-This document provides a detailed architectural specification for the **Weekly Product Review Pulse** system, scoped specifically for the **Groww** application and restricted to **Google Play reviews** for its initial release.
+This document provides a detailed architectural specification for the **Weekly Product Review Pulse** system, scoped specifically for the **Groww** application and restricted to **Google Play reviews** for its initial release. It includes a web dashboard for report visualization and stakeholder configuration management.
 
 ---
 
 ## 🏗️ System Overview
 
-The Weekly Product Review Pulse is designed to automate the aggregation, analysis, and dissemination of customer feedback. The architecture is modular, decoupled, and leverages the **Model Context Protocol (MCP)** to interact with Google Workspace components safely without local API credentials or SDK overhead.
+The Weekly Product Review Pulse is designed to automate the aggregation, analysis, and dissemination of customer feedback. The architecture is modular, decoupled, and leverages the **Model Context Protocol (MCP)** to interact with Google Workspace components safely without local API credentials or SDK overhead. It includes a web dashboard for report visualization and stakeholder configuration management.
 
 ```mermaid
 graph TD
@@ -27,11 +27,19 @@ graph TD
         H -->|Validated Insights JSON| I[Report & Email Renderer]
         I -->|Structured Section Payload| J[Google Docs MCP Client]
         I -->|Teaser Email Payload| K[Gmail MCP Client]
+        I -->|Structured Report JSON| N[Local Reports Storage]
     end
 
     subgraph Target Destinations
         J -->|Append Batch Update| L[Google Doc: Weekly Pulse - Groww]
         K -->|Draft / Send| M[Gmail Inbox / Stakeholders]
+    end
+
+    subgraph User Dashboard
+        N -->|Load Summary| O[Express API Server]
+        O -->|Serve Static App| P[Web Dashboard UI]
+        P -->|Update Emails| O
+        O -->|Trigger Draft| K
     end
 ```
 
@@ -46,10 +54,15 @@ review-pulse/
 ├── docs/
 │   ├── problemStatementReview.txt
 │   ├── contextReview.md
-│   └── architecture.md               <-- Documentation backup
+│   └── architecture.md               <-- This file
+├── public/                           <-- Web Dashboard Client
+│   ├── index.html                    <-- Dashboard layout
+│   ├── style.css                     <-- Dashboard premium styling
+│   └── app.js                        <-- Dashboard frontend controller
 ├── src/
-│   ├── index.ts                      <-- CLI and Execution Sequencer / Orchestrator
+│   ├── index.ts                      <-- Pipeline Execution Sequencer / Orchestrator
 │   ├── config.ts                     <-- Environment & Run configuration parameters
+│   ├── server.ts                     <-- Express API Server & Web Dashboard Backend
 │   ├── ingestion/
 │   │   ├── playStoreScraper.ts       <-- Fetches Google Play reviews for Groww
 │   │   └── types.ts                  <-- Raw and Structured Review Types
@@ -68,6 +81,9 @@ review-pulse/
 │       ├── mcpManager.ts             <-- Coordinates MCP client connections and tool calls
 │       ├── docsDelivery.ts           <-- Dispatches updates to Google Docs MCP
 │       └── gmailDelivery.ts          <-- Dispatches emails/drafts via Gmail MCP
+├── data/
+│   ├── run_log.json                  <-- Pipeline execution state (idempotency, doc URLs)
+│   └── reports/                      <-- Saved weekly report summaries (JSON format)
 ├── tests/
 │   ├── unit/                         <-- Unit tests for Scrubber, Validator, and Clusterer
 │   └── integration/                  <-- Integration test suite for MCP delivery mock runs
@@ -77,19 +93,19 @@ review-pulse/
 
 ---
 
-## 🔄 Execution Sequence (Weekly Run)
+## 🔄 Execution Sequence (Weekly Run & Dashboard Updates)
 
-The diagram below illustrates the end-to-end execution flow of a single run, including idempotency checks and fail-safes.
-
+### End-to-End Run Sequence
 ```mermaid
 sequenceDiagram
     autonumber
-    participant Trigger as CLI / Scheduler
+    participant Trigger as CLI / Scheduler / Web UI
     participant Orchestrator as Orchestrator Core
     participant Scraper as Google Play Scraper
     participant PII as PII Scrubber
     participant Reasoning as Reasoning Engine (UMAP + HDBSCAN + LLM)
     participant Validator as Quote Validator
+    participant DB as Local Report Storage
     participant MCP as MCP Manager (Host/Client)
     participant DocsMCP as Google Docs MCP Server
     participant GmailMCP as Gmail MCP Server
@@ -114,6 +130,7 @@ sequenceDiagram
         Validator-->>Orchestrator: Validation Success
     end
 
+    Orchestrator->>DB: Save Report Summary to data/reports/
     Orchestrator->>MCP: Connect & Retrieve Client Hooks
     
     MCP->>DocsMCP: Check for existing section anchor in Google Doc (Idempotency Step 2)
@@ -132,6 +149,26 @@ sequenceDiagram
     end
     
     Orchestrator-->>Trigger: Completed Status
+```
+
+### Stakeholder Update & Teaser Email Draft Sequence
+```mermaid
+sequenceDiagram
+    autonumber
+    participant UI as Web Dashboard
+    participant Backend as Express Server
+    participant ENV as .env Configuration
+    participant MCP as MCP Manager
+    participant Gmail as Gmail MCP Server
+
+    UI->>Backend: POST /api/stakeholders (New Email List)
+    Backend->>ENV: Update STAKEHOLDER_EMAILS on disk
+    Backend->>Backend: Reload runtime config
+    Backend->>Backend: Load active week report summary
+    Backend->>MCP: Initialize Gmail MCP client
+    Backend->>Gmail: Create email draft with teaser content to new list
+    Gmail-->>Backend: Draft Created Success (Draft ID)
+    Backend-->>UI: Updated Success (Status + Draft ID)
 ```
 
 ---
@@ -169,17 +206,21 @@ sequenceDiagram
     *   *Staging/Dev Default*: Create email draft for manual verification.
     *   *Production Default*: Send directly to the stakeholder email list.
 
+### 6. API Server & Web Dashboard Backend (`server.ts`)
+*   **Engine**: Lightweight Node.js Express server running on port `3000`.
+*   **Purpose**: Exposes endpoints to query historical runs from `data/run_log.json`, load specific report summaries from `data/reports/`, update the stakeholder email configuration dynamically in `.env`, and trigger new drafts to updated stakeholders.
+
 ---
 
 ## 🔒 State, Idempotency, and Auditing
 
 To ensure the system is production-grade, three layers of safety are implemented:
 
-1.  **State DB (Run Log)**: A lightweight JSON file or SQLite DB (`data/run_log.db`) records:
+1.  **State DB (Run Log)**: A lightweight JSON file (`data/run_log.json`) records:
     *   `iso_week` (e.g., `2026-W23`)
     *   `run_timestamp`
     *   `status` (SUCCESS, FAILED)
-    *   `doc_id` & `section_anchor_url`
-    *   `gmail_id` (Message or Draft ID)
+    *   `docUrl`
+    *   `gmailId` (Message or Draft ID)
 2.  **Doc Heading Pre-Check**: Before running Docs updates, the MCP client searches the Google Doc content for the heading corresponding to the execution week (e.g., `Groww — Weekly Review Pulse (Week 23, 2026)`). If found, the write is aborted.
 3.  **Audit Logs**: Every operation is logged with log levels (`INFO`, `WARN`, `ERROR`), documenting API token consumption, count of input reviews, identified clusters, and output delivery coordinates.
