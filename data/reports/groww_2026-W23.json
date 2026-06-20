@@ -1,0 +1,33 @@
+{
+  "week": "2026-W23",
+  "timestamp": "2026-06-08T18:32:35.950Z",
+  "docUrl": "https://docs.google.com/document/d/1JbdYb2GD2C7pUMNe00CH9HE57H8HWGGnYiwywK5FlT4/edit",
+  "gmailId": "{\"status\":\"success\",\"message\":\"Draft created\",\"draft_id\":\"r310459427017896608\"}",
+  "status": "SUCCESS",
+  "themes": [
+    {
+      "themeName": "KYC Verification Delays",
+      "themeDescription": "Users are expressing frustration over delays in KYC validation during account opening, stating that documents have been pending for several days without status updates.",
+      "representativeQuotes": [
+        "My KYC verification has been pending for the last 4 days and customer support is not responding.",
+        "Unable to start investing because my documents are still showing as in-progress since last week."
+      ],
+      "actionIdeas": [
+        "Optimize automated KYC document classification queues to flag pending submissions earlier.",
+        "Implement a real-time status tracker in the app to show exactly which KYC step is currently being verified."
+      ]
+    },
+    {
+      "themeName": "Options Chart Loading Latency",
+      "themeDescription": "Active options traders complain about latency issues where candlestick charts freeze or fail to update pricing instantly during high market volatility hours.",
+      "representativeQuotes": [
+        "Options charts are loading very slowly today. Missed my trade exit price.",
+        "The candlestick chart completely froze at 9:30 AM right when the market opened. Please fix the lag."
+      ],
+      "actionIdeas": [
+        "Investigate WebSockets connection pooling issues on the chart rendering interface.",
+        "Add a visual warning indicator for users when network ping goes above 150ms during live trading."
+      ]
+    }
+  ]
+}

@@ -1,0 +1,51 @@
+{
+  "week": "2026-W25",
+  "timestamp": "2026-06-20T06:17:37.453Z",
+  "docUrl": "https://docs.google.com/document/d/1JbdYb2GD2C7pUMNe00CH9HE57H8HWGGnYiwywK5FlT4/edit",
+  "gmailId": "{\"status\":\"success\",\"message\":\"Draft created\",\"draft_id\":\"r-1220883538400954277\"}",
+  "status": "SUCCESS",
+  "themes": [
+    {
+      "themeName": "App Reliability Issues",
+      "themeDescription": "Users are experiencing glitches and reliability issues with the Groww app, resulting in losses and frustration. These issues are affecting the overall user experience and trust in the platform.",
+      "representativeQuotes": [
+        "I faced a serious app glitch while trading, and because of this issue I suffered a significant loss.",
+        "Groww is now giving a lot of wrong information due to glitch due to which both we investors and traders are suffering losses.",
+        "For a trading platform, reliability and execution are very important."
+      ],
+      "actionIdeas": [
+        "Conduct thorough testing and debugging to identify and fix glitches and reliability issues",
+        "Implement robust error handling and notification systems to alert users of potential issues",
+        "Prioritize the development of features requested by users, such as trading directly from charts on the mobile app"
+      ]
+    },
+    {
+      "themeName": "Brokerage Charges and Usability",
+      "themeDescription": "Users are complaining about high brokerage charges, but praising the app's ease of use and interface. The core problem is the balance between affordability and user experience.",
+      "representativeQuotes": [
+        "Very high trading cost.. use other alternatives.",
+        "it is a great app for beginners it is very simple to use but their brokerage charge is more higher than some other apps",
+        "brokerage charges high , but app's ui and features are awesome"
+      ],
+      "actionIdeas": [
+        "Review and adjust brokerage charges to be more competitive with other apps",
+        "Consider offering tiered pricing or discounts for frequent users",
+        "Continue to enhance and simplify the app's interface to improve user experience"
+      ]
+    },
+    {
+      "themeName": "Positive User Experience",
+      "themeDescription": "Users are expressing overall satisfaction with the Groww financial app, praising its helpfulness and support. The reviews highlight a positive user experience with the app.",
+      "representativeQuotes": [
+        "very good and helpful app",
+        "Great app",
+        "awesome grow apps"
+      ],
+      "actionIdeas": [
+        "Continue to maintain and improve the app's user interface and experience",
+        "Enhance customer support to address any user concerns promptly",
+        "Consider implementing user feedback and suggestions to further improve the app"
+      ]
+    }
+  ]
+}

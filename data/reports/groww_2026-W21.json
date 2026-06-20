@@ -1,0 +1,33 @@
+{
+  "week": "2026-W21",
+  "timestamp": "2026-05-25T14:40:02.321Z",
+  "docUrl": "https://docs.google.com/document/d/1JbdYb2GD2C7pUMNe00CH9HE57H8HWGGnYiwywK5FlT4/edit",
+  "gmailId": "r3918274615243890122",
+  "status": "SUCCESS",
+  "themes": [
+    {
+      "themeName": "Order Book Latency during Market Close",
+      "themeDescription": "Intraday stock traders are complaining about latency when verifying order execution status in the order book, leading to double order submission due to uncertainty.",
+      "representativeQuotes": [
+        "Order showed pending for 3 minutes. I clicked buy again, and now I have double the shares because both executed!",
+        "Delayed notifications for executed orders. The order book is not updating in real time between 3:00 PM and 3:30 PM."
+      ],
+      "actionIdeas": [
+        "Introduce debouncing client-side on the transaction buttons to block accidental dual submissions.",
+        "Implement optimistic UI updates for stock order state transitions if database roundtrips lag."
+      ]
+    },
+    {
+      "themeName": "Dark Mode Contrast Issues",
+      "themeDescription": "A subset of users with accessibility preferences noted readability issues with specific UI charts and fonts under Dark Mode, particularly the grey text over black backgrounds.",
+      "representativeQuotes": [
+        "Dark mode is great but font contrast is very low. Hard to read stock returns numbers.",
+        "The grey colored lines in the profit/loss section are barely visible on the dark background."
+      ],
+      "actionIdeas": [
+        "Audit color contrast ratios in dark mode against WCAG AA requirements.",
+        "Brighten text color classes for subtext labels when dark mode is enabled."
+      ]
+    }
+  ]
+}

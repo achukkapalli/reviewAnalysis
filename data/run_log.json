@@ -1,0 +1,14 @@
+{
+  "groww:2026-W23": {
+    "timestamp": "2026-06-08T18:32:35.950Z",
+    "status": "SUCCESS",
+    "docUrl": "https://docs.google.com/document/d/1JbdYb2GD2C7pUMNe00CH9HE57H8HWGGnYiwywK5FlT4/edit",
+    "gmailId": "{\"status\":\"success\",\"message\":\"Draft created\",\"draft_id\":\"r310459427017896608\"}"
+  },
+  "groww:2026-W25": {
+    "timestamp": "2026-06-20T06:17:37.453Z",
+    "status": "SUCCESS",
+    "docUrl": "https://docs.google.com/document/d/1JbdYb2GD2C7pUMNe00CH9HE57H8HWGGnYiwywK5FlT4/edit",
+    "gmailId": "{\"status\":\"success\",\"message\":\"Draft created\",\"draft_id\":\"r-1220883538400954277\"}"
+  }
+}
